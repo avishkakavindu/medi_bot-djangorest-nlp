@@ -6,10 +6,11 @@ import pickle
 
 class HeartDiseaseClassifier:
     def __init__(self, dataset='dataset.csv'):
-        self.datasource = dataset
+        self.base_dir = './medi_bot_api/heart_disease/'
+        self.datasource = self.base_dir + dataset
         self.x = ''
         self.y = ''
-        self.file_name = 'heart_disease_classifier.sav'
+        self.file_name = self.base_dir + 'heart_disease_classifier.sav'
         self.classifier = None
 
     def preprocess(self):
@@ -55,7 +56,7 @@ class HeartDiseaseClassifier:
         self.xy_split(self.preprocess())
         
         # train
-        print(type(self.x), type(self.y))
+        # print(type(self.x), type(self.y))
         rf.fit(self.x, self.y)
 
         # save model

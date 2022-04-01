@@ -10,10 +10,11 @@ from tensorflow.keras.models import load_model
 class ChatBot():
 
     def __init__(self):
+        self.base_dir = './medi_bot_api/chatbot/'
         self.lemmatizer = WordNetLemmatizer()
-        self.words = pickle.load(open('./medi_bot_api/chatbot/words.pkl', 'rb'))
-        self.classes = pickle.load(open('./medi_bot_api/chatbot/classes.pkl', 'rb'))
-        self.json_file = open('./medi_bot_api/chatbot/intents.json')
+        self.words = pickle.load(open(self.base_dir + 'words.pkl', 'rb'))
+        self.classes = pickle.load(open(self.base_dir + 'classes.pkl', 'rb'))
+        self.json_file = open(self.base_dir + 'intents.json')
         self.intents = json.load(self.json_file)
         self.model = None
 

@@ -1,6 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from medi_bot_api.chatbot import bot, model_train
+from medi_bot_api.heart_disease import classifier
 from rest_framework import status
 
 
@@ -52,8 +53,19 @@ class MediBotAPIView(APIView):
                 'tag': tag,
                 'response': response,
                 'followup_questions': [
-                    'q1',
-                    'q2'
+                    'Age?',
+                    'Sex?',
+                    'Cp?',
+                    'Tresttbps?',
+                    'Chol?',
+                    'Fbs?',
+                    'Restecg?',
+                    'Thalach?',
+                    'Exang?',
+                    'Oldpeak?',
+                    'Slope?',
+                    'Ca?',
+                    'Thal?'
                 ]
             }
         else:
@@ -62,4 +74,69 @@ class MediBotAPIView(APIView):
                 'response': response
             }
 
+        return Response(context, status=status.HTTP_200_OK)
+
+
+class HeartDiseaseAPIView(APIView):
+    """ Handles operations related to Heart Disease model training """
+
+    def get(self, request, *args, **kwargs):
+        try:
+            model = classifier.HeartDiseaseClassifier()
+        except FileNotFoundError:
+            context = {
+                'detail': 'Something went wrong on required files configurations! please contact system admin.'
+            }
+            return Response(context, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        try:
+            model.train()
+        except:
+            context = {
+                'detail': 'Something went wrong on model training! please contact system admin.'
+            }
+            return Response(context, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        context = {
+            'detail': 'Model trained successfully!'
+        }
+
+        return Response(context, status=status.HTTP_200_OK)
+
+    def post(self, request, *args, **kwargs):
+        age = request.data.get('age')
+        sex = request.data.get('sex')
+        cp = request.data.get('cp')
+        trestbps = request.data.get('tresttbps')
+        chol = request.data.get('chol')
+        fbs = request.data.get('fbs')
+        restecg = request.data.get('restecg')
+        thalach = request.data.get('thalach')
+        exang = request.data.get('exang')
+        oldpeak = request.data.get('oldpeak')
+        slope = request.data.get('slope')
+        ca = request.data.get('ca')
+        thal = request.data.get('thal')
+        
+        data = [age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]
+
+        clf = classifier.HeartDiseaseClassifier()
+        try:
+            prediction = clf.get_predictions(data)
+        except ValueError:
+            context = {
+                'detail': 'Something went wrong on predicting! please recheck the data.'
+            }
+            return Response(context, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        if prediction:
+            response = 'You have a heart disease.'
+        else:
+            response = "You don't have a heart disease"        
+
+        context = {
+            'tag': 'heart_disease_prediction',
+            'response': response,
+        }
+        
         return Response(context, status=status.HTTP_200_OK)
