@@ -5,6 +5,10 @@ import pickle
 
 
 class HeartDiseaseClassifier:
+    """
+        Responsible for preprocessing, training and predicting Heart Disease
+    """
+
     def __init__(self, dataset='dataset.csv'):
         self.base_dir = './medi_bot_api/heart_disease/'
         self.datasource = self.base_dir + dataset
@@ -82,7 +86,7 @@ class HeartDiseaseClassifier:
             return True
         return False
 
-#
+# !!! Comment when deploying - TESTING PURPOSES ONLY !!!
 # if __name__ == '__main__':
 #     clf = HeartDiseaseClassifier()
 #     clf.train()

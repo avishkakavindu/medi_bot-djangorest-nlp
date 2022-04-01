@@ -15,6 +15,9 @@ from tensorflow.keras.optimizers import SGD
 
 
 class ChatBotModel:
+    """
+        Responsible in training intent classification model
+    """
 
     def __init__(self):
         self.words = []
@@ -26,6 +29,10 @@ class ChatBotModel:
         self.lemmatizer = WordNetLemmatizer()
 
     def preprosess(self):
+        """
+            Preprocess the dataset
+            :rtype: None
+        """
         for intent in self.intents['intents']:
             for pattern in intent['patterns']:
                 word_list = nltk.word_tokenize(pattern)
@@ -44,6 +51,10 @@ class ChatBotModel:
         pickle.dump(self.classes, open('./medi_bot_api/chatbot/classes.pkl', 'wb'))
 
     def get_trainingset(self):
+        """
+            Creates the training set for the model
+            :return: np array - Preprocessed dataset
+        """
         training = []
         output_empty = [0] * len(self.classes)
 
@@ -63,12 +74,23 @@ class ChatBotModel:
         return np.array(training)
 
     def xy_split(self, training_set):
+        """
+            Independent dependent variable splitting
+            :param training_set: np array - preprocessed complete dataset
+            :rtype: object
+        """
         train_x = list(training_set[:, 0])
         train_y = list(training_set[:, 1])
 
         return train_x, train_y
 
     def create_model(self, input_shape, output_shape):
+        """
+            Intent classification model.
+            :param input_shape: tuple - size of input data
+            "param output_shape: tuple - size of output data
+            :rtype: sequential
+        """
         model = Sequential()
         model.add(Dense(128, input_shape=input_shape, activation='relu'))
         model.add(Dropout(0.5))
@@ -82,6 +104,11 @@ class ChatBotModel:
         return model
 
     def train(self, epochs=200):
+        """
+            Training
+            :param epochs: int -  number of epochs
+            :rtype: model object
+        """
         self.preprosess()
         training_set = self.get_trainingset()
 

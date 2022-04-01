@@ -8,7 +8,9 @@ from tensorflow.keras.models import load_model
 
 
 class ChatBot():
-
+    """
+        Responsible on handling the chat bot(Intent classification generating responses)
+    """
     def __init__(self):
         self.base_dir = './medi_bot_api/chatbot/'
         self.lemmatizer = WordNetLemmatizer()
@@ -19,11 +21,19 @@ class ChatBot():
         self.model = None
 
     def clean_up_sentence(self, sentence):
+        """
+            :param sentence: str - sentence/pattern from the user
+            :rtype: list -  returns Summarized sentence
+        """
         sentence_words = nltk.word_tokenize(sentence)
         sentence_words = [self.lemmatizer.lemmatize(word) for word in sentence_words]
         return sentence_words
 
     def bag_of_words(self, sentence):
+        """
+            :param sentence: str sentence/pattern from the user
+            :rtype: np array - returns bag of words
+        """
         sentence_words = self.clean_up_sentence(sentence)
         bag = [0] * len(self.words)
         for w in sentence_words:
@@ -33,6 +43,10 @@ class ChatBot():
         return np.array(bag)
 
     def predict_class(self, sentence):
+        """
+            :param sentence: str sentence/pattern from the user
+            :rtype: list - returns processed dataset list of dict[{intent, probability}), ...]
+        """
         bow = self.bag_of_words(sentence)
 
         # load model
@@ -50,6 +64,12 @@ class ChatBot():
         return return_list
 
     def get_response(self, intents_list, intents_json):
+        """
+
+            :param intents_list: list -  list of intents
+            :param intents_json: json load
+            :rtype: string - random response
+        """
         tag = intents_list[0]['intent']
         list_of_intents = intents_json['intents']
 
