@@ -13,9 +13,9 @@ class ChatBot():
         self.lemmatizer = WordNetLemmatizer()
         self.words = pickle.load(open('./medi_bot_api/chatbot/words.pkl', 'rb'))
         self.classes = pickle.load(open('./medi_bot_api/chatbot/classes.pkl', 'rb'))
-        self.model = load_model('./medi_bot_api/chatbot/chatbotmodel.h5')
         self.json_file = open('./medi_bot_api/chatbot/intents.json')
         self.intents = json.load(self.json_file)
+        self.model = None
 
     def clean_up_sentence(self, sentence):
         sentence_words = nltk.word_tokenize(sentence)
@@ -33,6 +33,10 @@ class ChatBot():
 
     def predict_class(self, sentence):
         bow = self.bag_of_words(sentence)
+
+        # load model
+        self.model = load_model('./medi_bot_api/chatbot/chatbotmodel.h5')
+
         res = self.model.predict(np.array([bow]))[0]
         ERROR_THRESHOLD = 0.25
         results = [[i, r] for i, r in enumerate(res) if r > ERROR_THRESHOLD]
@@ -58,12 +62,3 @@ class ChatBot():
                 break
         return result
 
-# while True:
-#     message = input("")
-#
-#     chat_bot = ChatBot()
-#
-#     ints = chat_bot.predict_class(message)
-#     # print('predicted: ', ints)
-#     res = chat_bot.get_response(ints, chat_bot.intents)
-#     print(res)
