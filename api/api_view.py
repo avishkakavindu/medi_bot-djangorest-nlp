@@ -1,8 +1,11 @@
 from rest_framework.views import APIView
+from rest_framework import generics
 from rest_framework.response import Response
 from medi_bot_api.chatbot import bot, model_train
 from medi_bot_api.heart_disease import classifier
 from rest_framework import status
+from api.models import *
+from api.serializers import DoctorSerializer, AppointmentSerializer
 
 
 class MediBotAPIView(APIView):
@@ -71,7 +74,8 @@ class MediBotAPIView(APIView):
         else:
             context = {
                 'tag': tag,
-                'response': response
+                'response': response,
+                'followup_questions': None
             }
 
         return Response(context, status=status.HTTP_200_OK)
@@ -131,12 +135,28 @@ class HeartDiseaseAPIView(APIView):
 
         if prediction:
             response = 'You have a heart disease.'
+            specialty = Specialty.objects.get(specialty='Heart disease')
+            doctors = Doctor.objects.filter(specialty=specialty)
+
+            serializer = DoctorSerializer(doctors, many=True)
+            doctors_list = serializer.data
+
         else:
-            response = "You don't have a heart disease"        
+            response = "You don't have a heart disease"
+            doctors_list = None
 
         context = {
             'tag': 'heart_disease_prediction',
             'response': response,
+            'doctors_list': doctors_list
         }
         
         return Response(context, status=status.HTTP_200_OK)
+
+
+class AppointmentCreateAPIView(generics.CreateAPIView):
+    """ Handles appointment creation """
+
+    queryset = Appointment.objects.all()
+    serializer_class = AppointmentSerializer
+
