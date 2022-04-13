@@ -57,18 +57,18 @@ class MediBotAPIView(APIView):
                 'response': response,
                 'followup_questions': [
                     'Age?',
-                    'Sex?',
-                    'Cp?',
-                    'Tresttbps?',
-                    'Chol?',
-                    'Fbs?',
-                    'Restecg?',
-                    'Thalach?',
-                    'Exang?',
-                    'Oldpeak?',
-                    'Slope?',
-                    'Ca?',
-                    'Thal?'
+                    'Sex?(male/ female)',
+                    'Chest pain type()?',
+                    'Resting blood pressure?',
+                    'Serum cholesterol in mg/dl?',
+                    'Fast blood sugar > 120mg/dl (yes/no)?',
+                    'Resting electrocardiographic results(0, 1, 2)?',
+                    'Maximum heart rate achieved?',
+                    'Exercise induced angina?',
+                    'Oldpeak(ST depression induced by exercise relative to rest)?',
+                    'The slope of the peak exercise ST segment',
+                    'Number of major vessels (0-3) colored by flourosopy?',
+                    'Thal? (thal: 0 = normal; 1 = fixed defect; 2 = reversable defect)'
                 ]
             }
         else:
@@ -108,22 +108,28 @@ class HeartDiseaseAPIView(APIView):
         return Response(context, status=status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
-        age = request.data.get('age')
-        sex = request.data.get('sex')
-        cp = request.data.get('cp')
-        trestbps = request.data.get('tresttbps')
-        chol = request.data.get('chol')
-        fbs = request.data.get('fbs')
-        restecg = request.data.get('restecg')
-        thalach = request.data.get('thalach')
-        exang = request.data.get('exang')
-        oldpeak = request.data.get('oldpeak')
-        slope = request.data.get('slope')
-        ca = request.data.get('ca')
-        thal = request.data.get('thal')
-        
-        data = [age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]
+        # print(request.data)
+        data = request.data.get('payload')
+        import json
+        try:
+            data = json.loads(data)
+        except:
+            data = eval(data)
+        # print('\n\n\n\n', request.data, 'lol', type(data), '\n\n\n')
 
+        if data[1] == 'male' or 'Male' or 1:
+            data[1] = 1
+        else:
+            data[1] = 0
+
+        if data[5] == 'yes' or 'Yes':
+            data[5] = 1
+        else:
+            data[5] = 0
+
+        
+        data = [float(i) for i in data]
+        
         clf = classifier.HeartDiseaseClassifier()
         try:
             prediction = clf.get_predictions(data)

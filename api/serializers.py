@@ -4,9 +4,15 @@ from api.models import Doctor, Appointment
 
 class DoctorSerializer(serializers.ModelSerializer):
     """ Serialize the Doctor model """
+
+    specialty = serializers.SerializerMethodField()
+
     class Meta:
         model = Doctor
-        fields = '__all__'
+        fields = ['id', '__str__', 'specialty', 'first_name', 'last_name', 'get_experience', 'link']
+
+    def get_specialty(self, obj):
+        return obj.specialty.specialty
 
 
 class AppointmentSerializer(serializers.ModelSerializer):
@@ -14,4 +20,4 @@ class AppointmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Appointment
-        fields = ['doctor', 'date_time']
+        fields = '__all__'

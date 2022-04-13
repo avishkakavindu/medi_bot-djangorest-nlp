@@ -1,4 +1,6 @@
 from django.db import models
+from datetime import timedelta
+from django.utils import timezone
 
 
 class Specialty(models.Model):
@@ -21,12 +23,16 @@ class Doctor(models.Model):
     def __str__(self):
         return 'Dr. {} {}'.format(self.first_name, self.last_name)
 
+    @property
+    def get_experience(self):
+        return '{} years'.format(self.experience)
+
 
 class Appointment(models.Model):
     """ Holds appointment details """
 
     doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
-    date_time = models.DateTimeField()
+    date_time = models.DateTimeField(null=True, blank=True, default=timezone.now() + timedelta(days=2))
 
     def __str__(self):
         return self.id
