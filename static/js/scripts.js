@@ -9,6 +9,14 @@ payload = {
                 'current_question': 0
             }
 
+// trigger click on enter
+$(document).keypress(function(e){
+    if (e.which == 13){
+        e.preventDefault();
+        $("#send-btn, #answer-btn").click();
+    }
+});
+
 
 
 // send message
@@ -139,7 +147,7 @@ function askQuestions(payload){
 function callHeartDiseaseEndPoint(data) {
     // add send button
     addSendButton();
-    console.log('lol', data)
+    // console.log('lol', data)
      let csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
 
         let payload = {

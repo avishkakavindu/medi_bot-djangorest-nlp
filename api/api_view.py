@@ -140,7 +140,8 @@ class HeartDiseaseAPIView(APIView):
             return Response(context, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         if prediction:
-            response = 'You have a heart disease.'
+            response = 'You have a heart disease.<i class="fa fa-frown-o" aria-hidden="true"></i> Do you want to put ' \
+                       'an appointment? '
             specialty = Specialty.objects.get(specialty='Heart disease')
             doctors = Doctor.objects.filter(specialty=specialty)
 
