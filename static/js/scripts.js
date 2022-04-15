@@ -20,7 +20,7 @@ $(document).on('click', '#send-btn', function() {
     let csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
 
     let payload = {
-        "url": `http://127.0.0.1:8000/api/v1.0/medibot/`,
+        "url": `${$(location).attr('protocol')}//${domain}/api/v1.0/medibot/`,
         "method": "POST",
         "timeout": 0,
         "dataType": "json",
@@ -143,7 +143,7 @@ function callHeartDiseaseEndPoint(data) {
      let csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
 
         let payload = {
-            "url": `http://127.0.0.1:8000/api/v1.0/heart-disease-model/`,
+            "url": `${$(location).attr('protocol')}//${domain}/api/v1.0/heart-disease-model/`,
             "method": "POST",
             "timeout": 0,
             "dataType": "json",
@@ -202,7 +202,7 @@ $(document).on('click', '.appointment-btn', function(event) {
     let csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
 
     let payload = {
-        "url": `http://127.0.0.1:8000/api/v1.0/appointment/`,
+        "url": `${$(location).attr('protocol')}//${domain}/api/v1.0/appointment/`,
         "method": "POST",
         "timeout": 0,
         "dataType": "json",
