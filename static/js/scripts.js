@@ -2,8 +2,9 @@ const url = window.location.href.split('/');
 const protocol = url[0];
 const domain = url[2];
 
-heart_disease_payload = [];
+disease_payload = [];
 payload = {
+                'tag': null,
                 'followup_questions': null,
                 'number_of_questions': null,
                 'current_question': 0
@@ -52,10 +53,10 @@ $(document).on('click', '#answer-btn', function() {
         displayChatBotResponse(response);
     }
     else {
-        heart_disease_payload.push(answer);
+        disease_payload.push(answer);
         //display answer
         displayMessage(answer);
-        // console.log('HD payload: ', heart_disease_payload);
+        // console.log('HD payload: ', disease_payload);
 
         // ask next question
         askQuestions(payload);
@@ -114,6 +115,7 @@ function displayChatBotResponse(response){
         `
     );
     if (!(response['followup_questions'] == null)){
+        payload['tag'] = response['tag'];
         payload['followup_questions'] = response['followup_questions'];
         payload['number_of_questions'] = response['followup_questions'].length;
 
@@ -125,23 +127,57 @@ function displayChatBotResponse(response){
     $('#send').focus();
 }
 
+// call diagnose endpoint
+function callDiagnoseEndpoint(data) {
+    // add send button
+    addSendButton();
+    // console.log('lol', data)
+     let csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
+
+        let payload = {
+            "url": `${$(location).attr('protocol')}//${domain}/api/v1.0/diagnose/`,
+            "method": "POST",
+            "timeout": 0,
+            "dataType": "json",
+            "data": {
+                "csrfmiddlewaretoken": csrf_token,
+                'payload':JSON.stringify(data),
+            }
+        }
+
+        $.ajax(payload).done(function (response) {
+            displayChatBotResponse(response);
+            // appointment cards
+            displayDoctorList(response['doctors_list']);
+        });
+}
+
+
+
 // ask question
 function askQuestions(payload){
     response = {
         'response': payload['followup_questions'][payload['current_question']]
     }
 
-    // console.log('res', response);
+    console.log('res', payload);
 
     if(payload['current_question'] === payload['number_of_questions']){
-        callHeartDiseaseEndPoint(heart_disease_payload);
-        // console.log('sending', heart_disease_payload)
+        if(payload['tag'] === 'diagnose'){
+            console.log('Diagnose payload:', disease_payload);
+            callDiagnoseEndpoint(disease_payload)
+        }
+        else {
+            callHeartDiseaseEndPoint(disease_payload);
+            // console.log('sending', disease_payload)
+        }
     }
     else {
         displayChatBotResponse(response);
         payload['current_question'] += 1;
     }
 }
+
 
 // call heatdisease endpoint
 function callHeartDiseaseEndPoint(data) {
