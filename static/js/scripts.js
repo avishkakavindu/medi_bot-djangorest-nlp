@@ -10,6 +10,26 @@ payload = {
                 'current_question': 0
             }
 
+// onload message
+$( document ).ready(function() {
+     $('#chat-container').append(
+        `
+            <div class="col mb-2">
+                <div class="row">
+                    <div class="col col-2 col-sm-1 ">
+                        <i class="fa fa-user-circle-o fa-2x" aria-hidden="true"></i>
+                    </div>
+                    <div class="col col-10 col-sm-10 rounded-pill p-2 make-light1 text-light">
+                       <div class="ms-2">
+                             I'm MediBot, your medical assistant...
+                       </div>
+                    </div>
+                </div>
+            </div>
+        `
+    );
+});
+
 // trigger click on enter
 $(document).keypress(function(e){
     if (e.which == 13){
